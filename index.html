@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>País y Producto Aleatorio (Local)</title>
+    <!-- Carga de Tailwind CSS para estilos -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Fuente Inter para una mejor legibilidad */
+        body {
+            font-family: "Inter", sans-serif;
+        }
+        /* Estilos para el scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen flex items-center justify-center p-4">
+
+    <!-- Contenedor principal de la aplicación -->
+    <div id="appContainer" class="bg-white p-8 rounded-xl shadow-2xl max-w-md w-full text-center transform transition-all duration-300 hover:scale-105">
+
+        <!-- Pantalla de Inicio de Sesión -->
+        <div id="loginScreen" class="space-y-6">
+            <h1 class="text-4xl font-extrabold text-gray-900 mb-6">Bienvenido</h1>
+            <p class="text-lg text-gray-600 mb-8">Ingresa tus credenciales para comenzar.</p>
+
+            <input type="text" id="usernameInput" placeholder="Usuario" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg">
+            <input type="password" id="passwordInput" placeholder="Contraseña" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg mt-3">
+            <button id="loginButton" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-1 active:scale-95 focus:outline-none focus:ring-4 focus:ring-blue-300 mt-4">
+                Entrar
+            </button>
+            <div id="loginMessage" class="mt-4 text-red-600 font-semibold hidden"></div>
+        </div>
+
+        <!-- Pantalla Principal de la Aplicación (oculta inicialmente) -->
+        <div id="mainAppScreen" class="hidden">
+            <h1 class="text-4xl font-extrabold text-gray-900 mb-4">Economía Mundial</h1>
+            <p class="text-md text-gray-500 mb-6">Usuario: <span id="loggedInUsername" class="font-semibold text-blue-700"></span></p>
+
+            <!-- Gestión de Partida simplificada -->
+            <div class="bg-gray-100 p-4 rounded-lg mb-6 shadow-inner border border-gray-200">
+                <h2 class="text-xl font-bold text-gray-800 mb-3">Control de la Partida</h2>
+                <button id="newGameButton" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 active:scale-95 focus:outline-none focus:ring-4 focus:ring-red-300">
+                    Nueva Partida
+                </button>
+                <div id="sessionMessage" class="mt-3 text-red-600 font-semibold hidden"></div>
+                <p class="text-sm text-gray-500 mt-2">Jugadas: <span id="attemptsDisplay" class="font-semibold text-blue-700">0</span>/20</p>
+            </div>
+
+            <!-- Botones de acción y displays -->
+            <div class="flex flex-col sm:flex-row gap-4 mb-8">
+                <!-- Display del País Actual -->
+                <div id="currentCountryDisplay" class="bg-purple-100 text-purple-800 text-3xl font-bold py-6 px-4 rounded-lg shadow-inner border border-purple-200 min-h-[80px] flex items-center justify-center w-full sm:w-1/2">
+                    ¡Haz clic!
+                </div>
+                <!-- Display del Producto Actual -->
+                <div id="currentProductDisplay" class="bg-purple-100 text-purple-800 text-3xl font-bold py-6 px-4 rounded-lg shadow-inner border border-purple-200 min-h-[80px] flex items-center justify-center w-full sm:w-1/2">
+                    ¡Haz clic!
+                </div>
+            </div>
+
+            <!-- Botón para Iniciar la Simulación -->
+            <button id="pickCountryButton" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-1 active:scale-95 focus:outline-none focus:ring-4 focus:ring-blue-300">
+                Simulación
+            </button>
+
+            <!-- Área de Mensajes de Estado -->
+            <div id="messageArea" class="mt-6 text-lg font-semibold text-red-600 hidden"></div>
+            
+            <!-- Listas de Países y Productos Visitados -->
+            <div class="flex flex-col sm:flex-row gap-4 mt-10">
+                <!-- Lista de Países Visitados -->
+                <div class="w-full sm:w-1/2">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 border-b-2 pb-2 border-gray-200">Países Destacados:</h2>
+                    <ol id="visitedCountriesList" class="list-decimal list-inside text-lg text-gray-700 space-y-2 max-h-60 overflow-y-auto bg-gray-50 p-4 rounded-lg border border-gray-200 custom-scrollbar">
+                        <!-- La lista de países visitados se llenará aquí -->
+                    </ol>
+                </div>
+                <!-- Lista de Productos Aleatorios -->
+                <div class="w-full sm:w-1/2">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 border-b-2 pb-2 border-gray-200">Productos Destacados:</h2>
+                    <ol id="visitedProductsList" class="list-decimal list-inside text-lg text-gray-700 space-y-2 max-h-60 overflow-y-auto bg-gray-50 p-4 rounded-lg border border-gray-200 custom-scrollbar">
+                        <!-- La lista de productos se llenará aquí -->
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Variables de Estado de la Aplicación (ahora locales) ---
+        let currentUsername = null;
+        let attempts = 0; // Contador de jugadas
+        
+        // Listas de países y productos
+        const allCountries = [
+            "Afganistán", "Albania", "Alemania", "Andorra", "Angola", "Antigua y Barbuda", "Arabia Saudita", "Argelia", "Argentina", "Armenia",
+            "Australia", "Austria", "Azerbaiyán", "Bahamas", "Bangladés", "Barbados", "Baréin", "Bélgica", "Belice", "Benín",
+            "Bielorrusia", "Birmania", "Bolivia", "Bosnia y Herzegovina", "Botsuana", "Brasil", "Brunéi", "Bulgaria", "Burkina Faso", "Burundi",
+            "Bután", "Cabo Verde", "Camboya", "Camerún", "Canadá", "Catar", "Chad", "Chile", "China", "Chipre",
+            "Ciudad del Vaticano", "Colombia", "Comoras", "Comoras", "Corea del Norte", "Corea del Sur", "Costa de Marfil", "Costa Rica", "Croacia", "Cuba", "Dinamarca",
+            "Dominica", "Ecuador", "Egipto", "El Salvador", "Emiratos Árabes Unidos", "Eritrea", "Eslovaquia", "Eslovenia", "España", "Estados Unidos",
+            "Estonia", "Etiopía", "Filipinas", "Finlandia", "Fiyi", "Francia", "Gabón", "Gambia", "Georgia", "Ghana",
+            "Granada", "Grecia", "Guatemala", "Guinea", "Guinea Ecuatorial", "Guinea-Bisáu", "Guyana", "Haití", "Honduras", "Hungría",
+            "India", "Indonesia", "Irak", "Irán", "Irlanda", "Islandia", "Islas Marshall", "Islas Salomón", "Israel", "Italia",
+            "Jamaica", "Japón", "Jordania", "Kazajistán", "Kenia", "Kirguistán", "Kiribati", "Kuwait", "Laos", "Lesoto",
+            "Letonia", "Líbano", "Liberia", "Libia", "Liechtenstein", "Lituania", "Luxemburgo", "Macedonia del Norte", "Madagascar", "Malasia",
+            "Malaui", "Maldivas", "Mali", "Malta", "Marruecos", "Mauricio", "Mauritania", "México", "Micronesia", "Moldavia",
+            "Mónaco", "Mongolia", "Montenegro", "Mozambique", "Namibia", "Nauru", "Nepal", "Nicaragua", "Níger", "Nigeria",
+            "Noruega", "Nueva Zelanda", "Omán", "Países Bajos", "Pakistán", "Palaos", "Palestina", "Panamá", "Papúa Nueva Guinea", "Paraguay",
+            "Perú", "Polonia", "Portugal", "Reino Unido", "República Centroafricana", "República Checa", "República del Congo", "República Democrática del Congo", "República Dominicana", "Ruanda",
+            "Rumanía", "Rusia", "Samoa", "San Cristóbal y Nieves", "San Marino", "San Vicente y las Granadinas", "Santa Lucía", "Santo Tomé y Príncipe", "Senegal", "Serbia",
+            "Seychelles", "Sierra Leona", "Singapur", "Siria", "Somalia", "Sri Lanka", "Suazilandia", "Sudáfrica", "Sudán", "Sudán del Sur",
+            "Suecia", "Suiza", "Surinam", "Tailandia", "Tanzania", "Tayikistán", "Timor Oriental", "Togo", "Tonga", "Trinidad y Tobago",
+            "Túnez", "Turkmenistán", "Turquía", "Tuvalu", "Ucrania", "Uganda", "Uruguay", "Uzbekistán", "Vanuatu", "Venezuela",
+            "Vietnam", "Yemen", "Yibuti", "Zambia", "Zimbabue"
+        ];
+        
+        const allProducts = [
+            "Cebada", "Avena", "Trigo", "Limones", "Peras", "Manzanas", "Petroleo", "Carbon", "Soja", "Maiz",
+            "Bananas", "Zapallo", "Vacas", "Cabras", "Cacao", "Cafe", "Cerdos", "Pescados", "Oro", "Plata",
+            "Arroz", "Niquel", "Aluminio", "Hierro", "Robot", "Vainilla", "Higos", "Autos", "Naranjas"
+        ];
+
+        let shuffledCountries = [];
+        let currentIndex = 0;
+        let visitedCountries = [];
+
+        let shuffledProducts = [];
+        let currentProductIndex = 0;
+        let visitedProducts = [];
+
+        // Obtener referencias a los elementos del DOM
+        const loginScreen = document.getElementById('loginScreen');
+        const mainAppScreen = document.getElementById('mainAppScreen');
+        const usernameInput = document.getElementById('usernameInput');
+        const passwordInput = document.getElementById('passwordInput');
+        const loginButton = document.getElementById('loginButton');
+        const loginMessage = document.getElementById('loginMessage');
+        const loggedInUsernameDisplay = document.getElementById('loggedInUsername');
+
+        const newGameButton = document.getElementById('newGameButton');
+        const attemptsDisplay = document.getElementById('attemptsDisplay');
+        const pickCountryButton = document.getElementById('pickCountryButton');
+        const currentCountryDisplay = document.getElementById('currentCountryDisplay');
+        const visitedCountriesList = document.getElementById('visitedCountriesList');
+        const currentProductDisplay = document.getElementById('currentProductDisplay');
+        const visitedProductsList = document.getElementById('visitedProductsList');
+        const messageArea = document.getElementById('messageArea');
+
+        // --- Funciones de Lógica de la Interfaz (UI) ---
+        function showLoginScreen() {
+            loginScreen.classList.remove('hidden');
+            mainAppScreen.classList.add('hidden');
+            loginMessage.classList.add('hidden');
+            usernameInput.value = '';
+            passwordInput.value = '';
+        }
+
+        function showMainApp() {
+            loginScreen.classList.add('hidden');
+            mainAppScreen.classList.remove('hidden');
+            loggedInUsernameDisplay.textContent = currentUsername;
+            startNewGame(); // Iniciar una nueva partida automáticamente al entrar
+        }
+
+        function updateVisitedCountriesList() {
+            visitedCountriesList.innerHTML = '';
+            visitedCountries.forEach(country => {
+                const listItem = document.createElement('li');
+                listItem.textContent = country;
+                visitedCountriesList.appendChild(listItem);
+            });
+            visitedCountriesList.scrollTop = visitedCountriesList.scrollHeight;
+        }
+
+        function updateVisitedProductsList() {
+            visitedProductsList.innerHTML = '';
+            visitedProducts.forEach(product => {
+                const listItem = document.createElement('li');
+                listItem.textContent = product;
+                visitedProductsList.appendChild(listItem);
+            });
+            visitedProductsList.scrollTop = visitedProductsList.scrollHeight;
+        }
+
+        function resetGameDisplay() {
+            // Resetear displays
+            currentCountryDisplay.textContent = '¡Haz clic!';
+            currentCountryDisplay.classList.remove('bg-green-100', 'text-green-800', 'bg-gray-200', 'text-gray-500');
+            currentCountryDisplay.classList.add('bg-purple-100', 'text-purple-800');
+            
+            currentProductDisplay.textContent = '¡Haz clic!';
+            currentProductDisplay.classList.remove('bg-green-100', 'text-green-800', 'bg-gray-200', 'text-gray-500');
+            currentProductDisplay.classList.add('bg-purple-100', 'text-purple-800');
+
+            pickCountryButton.disabled = false;
+            pickCountryButton.textContent = 'Simulación';
+            messageArea.classList.add('hidden');
+            visitedCountriesList.innerHTML = '';
+            visitedProductsList.innerHTML = '';
+            attemptsDisplay.textContent = attempts;
+        }
+
+        function showLoginMessage(message, isError = false) {
+            loginMessage.textContent = message;
+            loginMessage.classList.remove('hidden');
+            loginMessage.classList.toggle('text-red-600', isError);
+            loginMessage.classList.toggle('text-green-600', !isError);
+            setTimeout(() => {
+                loginMessage.classList.add('hidden');
+            }, 5000);
+        }
+
+        // --- Lógica del Juego ---
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function startNewGame() {
+            // Reiniciar el estado del juego
+            shuffledCountries = shuffleArray([...allCountries]);
+            currentIndex = 0;
+            visitedCountries = [];
+            
+            shuffledProducts = shuffleArray([...allProducts]);
+            currentProductIndex = 0;
+            visitedProducts = [];
+            
+            attempts = 0; // Reiniciar contador de jugadas
+            
+            resetGameDisplay();
+            showLoginMessage('Nueva partida iniciada.', false);
+        }
+
+        // --- Event Listeners ---
+        loginButton.addEventListener('click', () => {
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value.trim();
+            
+            // Verificación de credenciales codificadas
+            if (username === 'djas' && password === '12345') {
+                currentUsername = username;
+                showMainApp();
+                showLoginMessage('Bienvenido, ' + username + '!', false);
+            } else {
+                showLoginMessage('Usuario o contraseña incorrectos.', true);
+            }
+        });
+
+        newGameButton.addEventListener('click', startNewGame);
+
+        pickCountryButton.addEventListener('click', () => {
+            const MAX_ATTEMPTS = 20;
+
+            if (attempts >= MAX_ATTEMPTS) {
+                // Reiniciar el juego si se alcanza el límite
+                startNewGame();
+                messageArea.textContent = 'Límite de acciones. ¡Comienza de nuevo!';
+                messageArea.classList.remove('hidden');
+                return;
+            }
+
+            attempts++;
+            attemptsDisplay.textContent = attempts;
+            messageArea.classList.add('hidden'); // Ocultar mensaje de reinicio
+
+            // Seleccionar y mostrar país
+            const areCountriesFinished = currentIndex >= shuffledCountries.length;
+            if (!areCountriesFinished) {
+                const country = shuffledCountries[currentIndex];
+                currentIndex++;
+                currentCountryDisplay.textContent = country;
+                visitedCountries.push(country);
+                updateVisitedCountriesList();
+            } else if (currentCountryDisplay.textContent !== '¡Todos los países mostrados!') {
+                currentCountryDisplay.textContent = '¡Todos los países mostrados!';
+                currentCountryDisplay.classList.add('bg-gray-200', 'text-gray-500');
+            }
+
+            // Seleccionar y mostrar producto
+            const areProductsFinished = currentProductIndex >= shuffledProducts.length;
+            if (!areProductsFinished) {
+                const product = shuffledProducts[currentProductIndex];
+                currentProductIndex++;
+                currentProductDisplay.textContent = product;
+                visitedProducts.push(product);
+                updateVisitedProductsList();
+            } else if (currentProductDisplay.textContent !== '¡Todos los productos mostrados!') {
+                currentProductDisplay.textContent = '¡Todos los productos mostrados!';
+                currentProductDisplay.classList.add('bg-gray-200', 'text-gray-500');
+            }
+            
+            // Si ya no quedan países ni productos, deshabilitar el botón
+            if (areCountriesFinished && areProductsFinished) {
+                 pickCountryButton.disabled = true;
+                 pickCountryButton.textContent = '¡Todos los elementos mostrados!';
+                 messageArea.textContent = '¡Has explorado todos los países y productos del planeta!';
+                 messageArea.classList.remove('hidden');
+                 currentCountryDisplay.classList.remove('bg-purple-100', 'text-purple-800');
+                 currentCountryDisplay.classList.add('bg-green-100', 'text-green-800');
+                 currentProductDisplay.classList.remove('bg-purple-100', 'text-purple-800');
+                 currentProductDisplay.classList.add('bg-green-100', 'text-green-800');
+            }
+
+            if (attempts === MAX_ATTEMPTS) {
+                messageArea.textContent = 'Límite de acciones';
+                messageArea.classList.remove('hidden');
+            }
+        });
+
+        // Iniciar la pantalla de login al cargar la página
+        document.addEventListener('DOMContentLoaded', showLoginScreen);
+    </script>
+</body>
+</html>
