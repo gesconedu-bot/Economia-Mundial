@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>País y Producto Aleatorio (Local)</title>
-    <!-- Carga de Tailwind CSS para estilos -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Fuente Inter para una mejor legibilidad */
@@ -26,32 +25,23 @@
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
             background: #555;
         }
+        .modal {
+            transition: all 0.3s ease-in-out;
+            transform: scale(0.95);
+        }
+        .modal.visible {
+            transform: scale(1);
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen flex items-center justify-center p-4">
 
-    <!-- Contenedor principal de la aplicación -->
     <div id="appContainer" class="bg-white p-8 rounded-xl shadow-2xl max-w-md w-full text-center transform transition-all duration-300 hover:scale-105">
 
-        <!-- Pantalla de Inicio de Sesión -->
-        <div id="loginScreen" class="space-y-6">
-            <h1 class="text-4xl font-extrabold text-gray-900 mb-6">Bienvenido</h1>
-            <p class="text-lg text-gray-600 mb-8">Ingresa tus credenciales para comenzar.</p>
-
-            <input type="text" id="usernameInput" placeholder="Usuario" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg">
-            <input type="password" id="passwordInput" placeholder="Contraseña" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg mt-3">
-            <button id="loginButton" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-1 active:scale-95 focus:outline-none focus:ring-4 focus:ring-blue-300 mt-4">
-                Entrar
-            </button>
-            <div id="loginMessage" class="mt-4 text-red-600 font-semibold hidden"></div>
-        </div>
-
-        <!-- Pantalla Principal de la Aplicación (oculta inicialmente) -->
-        <div id="mainAppScreen" class="hidden">
+        <div id="mainAppScreen">
             <h1 class="text-4xl font-extrabold text-gray-900 mb-4">Economía Mundial</h1>
-            <p class="text-md text-gray-500 mb-6">Usuario: <span id="loggedInUsername" class="font-semibold text-blue-700"></span></p>
+            <p class="text-md text-gray-500 mb-6">¡Bienvenido! Juega sin necesidad de usuario.</p>
 
-            <!-- Gestión de Partida simplificada -->
             <div class="bg-gray-100 p-4 rounded-lg mb-6 shadow-inner border border-gray-200">
                 <h2 class="text-xl font-bold text-gray-800 mb-3">Control de la Partida</h2>
                 <button id="newGameButton" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 active:scale-95 focus:outline-none focus:ring-4 focus:ring-red-300">
@@ -61,274 +51,774 @@
                 <p class="text-sm text-gray-500 mt-2">Jugadas: <span id="attemptsDisplay" class="font-semibold text-blue-700">0</span>/20</p>
             </div>
 
-            <!-- Botones de acción y displays -->
-            <div class="flex flex-col sm:flex-row gap-4 mb-8">
-                <!-- Display del País Actual -->
-                <div id="currentCountryDisplay" class="bg-purple-100 text-purple-800 text-3xl font-bold py-6 px-4 rounded-lg shadow-inner border border-purple-200 min-h-[80px] flex items-center justify-center w-full sm:w-1/2">
-                    ¡Haz clic!
-                </div>
-                <!-- Display del Producto Actual -->
-                <div id="currentProductDisplay" class="bg-purple-100 text-purple-800 text-3xl font-bold py-6 px-4 rounded-lg shadow-inner border border-purple-200 min-h-[80px] flex items-center justify-center w-full sm:w-1/2">
-                    ¡Haz clic!
-                </div>
-            </div>
-
-            <!-- Botón para Iniciar la Simulación -->
-            <button id="pickCountryButton" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-1 active:scale-95 focus:outline-none focus:ring-4 focus:ring-blue-300">
+            <button id="pickCountryButton" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-1 active:scale-95 focus:outline-none focus:ring-4 focus:ring-blue-300 mb-8">
                 Simulación
             </button>
 
-            <!-- Área de Mensajes de Estado -->
-            <div id="messageArea" class="mt-6 text-lg font-semibold text-red-600 hidden"></div>
+            <div class="w-full mb-8">
+                <div class="text-lg font-bold text-gray-700 mb-2">País</div>
+                <div id="currentCountryDisplay" class="bg-purple-100 text-purple-800 text-3xl font-bold py-6 px-4 rounded-lg shadow-inner border border-purple-200 min-h-[80px] flex items-center justify-center w-full cursor-pointer">
+                    ¡Haz clic!
+                </div>
+            </div>
+            <div class="w-full mb-8">
+                <div class="text-lg font-bold text-gray-700 mb-2">Producto</div>
+                <div id="currentProductDisplay" class="bg-purple-100 text-purple-800 text-3xl font-bold py-6 px-4 rounded-lg shadow-inner border border-purple-200 min-h-[80px] flex items-center justify-center w-full cursor-pointer">
+                    ¡Haz clic!
+                </div>
+            </div>
+
+            <div class="text-lg font-bold text-gray-700 mb-2">Evento Actual</div>
+            <div id="eventMessageContainer" class="mt-6 p-4 rounded-lg shadow-md bg-green-50 hidden">
+                <div id="eventMessage" class="text-xl font-semibold text-green-800"></div>
+            </div>
+            <div id="messageArea" class="mt-2 text-lg font-semibold text-red-600 hidden"></div>
             
-            <!-- Listas de Países y Productos Visitados -->
             <div class="flex flex-col sm:flex-row gap-4 mt-10">
-                <!-- Lista de Países Visitados -->
                 <div class="w-full sm:w-1/2">
                     <h2 class="text-2xl font-bold text-gray-800 mb-4 border-b-2 pb-2 border-gray-200">Países Destacados:</h2>
                     <ol id="visitedCountriesList" class="list-decimal list-inside text-lg text-gray-700 space-y-2 max-h-60 overflow-y-auto bg-gray-50 p-4 rounded-lg border border-gray-200 custom-scrollbar">
-                        <!-- La lista de países visitados se llenará aquí -->
-                    </ol>
+                        </ol>
                 </div>
-                <!-- Lista de Productos Aleatorios -->
                 <div class="w-full sm:w-1/2">
                     <h2 class="text-2xl font-bold text-gray-800 mb-4 border-b-2 pb-2 border-gray-200">Productos Destacados:</h2>
                     <ol id="visitedProductsList" class="list-decimal list-inside text-lg text-gray-700 space-y-2 max-h-60 overflow-y-auto bg-gray-50 p-4 rounded-lg border border-gray-200 custom-scrollbar">
-                        <!-- La lista de productos se llenará aquí -->
-                    </ol>
+                        </ol>
                 </div>
             </div>
+            <div class="mt-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 border-b-2 pb-2 border-gray-200">Eventos:</h2>
+                <ul id="visitedEventsList" class="list-none list-inside text-lg text-gray-700 space-y-2 max-h-60 overflow-y-auto bg-gray-50 p-4 rounded-lg border border-gray-200 custom-scrollbar">
+                    </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div id="countryModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden flex items-center justify-center p-4 z-50">
+        <div id="countryModalContent" class="bg-white p-8 rounded-xl shadow-2xl max-w-sm w-full text-center relative transform transition-all duration-300 scale-95">
+            <button id="closeCountryModalButton" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 focus:outline-none text-3xl font-bold">
+                &times;
+            </button>
+            <h3 class="text-3xl font-bold text-gray-800 mb-4">País</h3>
+            <p id="countryNameInModal" class="text-4xl font-extrabold text-blue-600 mb-6"></p>
+            <div id="countryFlagContainer" class="w-40 h-28 mx-auto mb-4 border border-gray-300 rounded-lg overflow-hidden shadow-lg">
+                <img id="countryFlagImage" src="" alt="Bandera del país" class="w-full h-full object-cover">
+            </div>
+            <div id="countryInfo" class="text-left mt-6 p-4 bg-gray-50 rounded-lg">
+                <p class="text-lg font-semibold text-gray-700 mb-2">Detalles:</p>
+                <p id="countryContinent" class="text-base text-gray-600"></p>
+                <p id="countryProducts" class="text-base text-gray-600"></p>
+                <p id="countryTotal" class="text-base text-gray-600"></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="productModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden flex items-center justify-center p-4 z-50">
+        <div id="productModalContent" class="bg-white p-8 rounded-xl shadow-2xl max-w-sm w-full text-center relative transform transition-all duration-300 scale-95">
+            <button id="closeModalButton" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 focus:outline-none text-3xl font-bold">
+                &times;
+            </button>
+            <h3 class="text-2xl font-bold text-gray-800 mb-4">Producto</h3>
+            <p id="productNameInModal" class="text-3xl font-extrabold text-blue-600 mb-6"></p>
+            <p class="text-gray-500 mb-4">Países productores:</p> <div id="productInfo" class="text-base text-gray-700 space-y-2">
+                </div>
         </div>
     </div>
 
     <script>
         // --- Variables de Estado de la Aplicación (ahora locales) ---
-        let currentUsername = null;
         let attempts = 0; // Contador de jugadas
-        
+        const MAX_ATTEMPTS = 20;
+
         // Listas de países y productos
         const allCountries = [
-            "Afganistán", "Albania", "Alemania", "Andorra", "Angola", "Antigua y Barbuda", "Arabia Saudita", "Argelia", "Argentina", "Armenia",
-            "Australia", "Austria", "Azerbaiyán", "Bahamas", "Bangladés", "Barbados", "Baréin", "Bélgica", "Belice", "Benín",
-            "Bielorrusia", "Birmania", "Bolivia", "Bosnia y Herzegovina", "Botsuana", "Brasil", "Brunéi", "Bulgaria", "Burkina Faso", "Burundi",
-            "Bután", "Cabo Verde", "Camboya", "Camerún", "Canadá", "Catar", "Chad", "Chile", "China", "Chipre",
-            "Ciudad del Vaticano", "Colombia", "Comoras", "Comoras", "Corea del Norte", "Corea del Sur", "Costa de Marfil", "Costa Rica", "Croacia", "Cuba", "Dinamarca",
-            "Dominica", "Ecuador", "Egipto", "El Salvador", "Emiratos Árabes Unidos", "Eritrea", "Eslovaquia", "Eslovenia", "España", "Estados Unidos",
-            "Estonia", "Etiopía", "Filipinas", "Finlandia", "Fiyi", "Francia", "Gabón", "Gambia", "Georgia", "Ghana",
-            "Granada", "Grecia", "Guatemala", "Guinea", "Guinea Ecuatorial", "Guinea-Bisáu", "Guyana", "Haití", "Honduras", "Hungría",
-            "India", "Indonesia", "Irak", "Irán", "Irlanda", "Islandia", "Islas Marshall", "Islas Salomón", "Israel", "Italia",
-            "Jamaica", "Japón", "Jordania", "Kazajistán", "Kenia", "Kirguistán", "Kiribati", "Kuwait", "Laos", "Lesoto",
-            "Letonia", "Líbano", "Liberia", "Libia", "Liechtenstein", "Lituania", "Luxemburgo", "Macedonia del Norte", "Madagascar", "Malasia",
-            "Malaui", "Maldivas", "Mali", "Malta", "Marruecos", "Mauricio", "Mauritania", "México", "Micronesia", "Moldavia",
-            "Mónaco", "Mongolia", "Montenegro", "Mozambique", "Namibia", "Nauru", "Nepal", "Nicaragua", "Níger", "Nigeria",
-            "Noruega", "Nueva Zelanda", "Omán", "Países Bajos", "Pakistán", "Palaos", "Palestina", "Panamá", "Papúa Nueva Guinea", "Paraguay",
-            "Perú", "Polonia", "Portugal", "Reino Unido", "República Centroafricana", "República Checa", "República del Congo", "República Democrática del Congo", "República Dominicana", "Ruanda",
-            "Rumanía", "Rusia", "Samoa", "San Cristóbal y Nieves", "San Marino", "San Vicente y las Granadinas", "Santa Lucía", "Santo Tomé y Príncipe", "Senegal", "Serbia",
-            "Seychelles", "Sierra Leona", "Singapur", "Siria", "Somalia", "Sri Lanka", "Suazilandia", "Sudáfrica", "Sudán", "Sudán del Sur",
-            "Suecia", "Suiza", "Surinam", "Tailandia", "Tanzania", "Tayikistán", "Timor Oriental", "Togo", "Tonga", "Trinidad y Tobago",
-            "Túnez", "Turkmenistán", "Turquía", "Tuvalu", "Ucrania", "Uganda", "Uruguay", "Uzbekistán", "Vanuatu", "Venezuela",
+            "Afganistán", "Albania", "Alemania", "Angola", "Arabia Saudita", "Argelia", "Argentina", "Armenia",
+            "Australia", "Austria", "Azerbaiyán", "Las Bahamas", "Bangladés", "Bélgica", "Belice", "Benín",
+            "Bielorrusia", "Bolivia", "Bosnia y Herzegovina", "Botsuana", "Brasil", "Brunéi", "Bulgaria", "Burkina Faso", "Burundi",
+            "Bután", "Camboya", "Camerún", "Canadá", "Catar", "Chad", "Chile", "China",
+            "Colombia", "Congo", "Corea del Norte", "Corea del Sur", "Costa de Marfil", "Costa Rica", "Croacia", "Cuba", "Dinamarca",
+            "Ecuador", "Egipto", "El Salvador", "Emiratos Árabes Unidos", "Eritrea", "Eslovaquia", "Eslovenia", "España", "Estados Unidos",
+            "Estonia", "Esuatini", "Etiopía", "Filipinas", "Finlandia", "Fiji", "Francia", "Gabón", "Gambia", "Georgia", "Ghana",
+            "Grecia", "Guatemala", "Guinea", "Guinea-Bisáu", "Guyana", "Guayana", "Groenlandia", "Haití", "Honduras", "Hungría",
+            "India", "Indonesia", "Irak", "Irán", "Irlanda", "Islandia", "Islas Salomón", "Israel", "Italia",
+            "Jamaica", "Japón", "Jordania", "Kazajistán", "Kenia", "Kirguistán", "Kuwait", "Laos", "Lesoto",
+            "Letonia", "Líbano", "Liberia", "Libia", "Lituania", "Luxemburgo", "Macedonia", "Madagascar", "Malasia",
+            "Malaui", "Mali", "Marruecos", "Mauritania", "México", "Moldavia", "Myanmar",
+            "Mongolia", "Montenegro", "Mozambique", "Namibia", "Nepal", "Nicaragua", "Níger", "Nigeria",
+            "Noruega", "Nueva Zelanda", "Nueva Caledonia", "Omán", "Países Bajos", "Pakistán", "Panamá", "Papúa Nueva Guinea", "Paraguay",
+            "Perú", "Polonia", "Polinesia Francesa", "Portugal", "Puerto Rico", "Reino Unido", "República Centroafricana", "Chequia", "República Dem. del Congo", "República Dominicana", "Ruanda",
+            "Rumanía", "Rusia", "Sahara Occidental", "Samoa", "Senegal", "Serbia",
+            "Sierra Leona", "Singapur", "Siria", "Somalia", "Sri Lanka", "Sudáfrica", "Sudán", "Sudán del Sur",
+            "Suecia", "Suiza", "Surinam", "Tailandia", "Tanzania", "Taiwán", "Tayikistán", "Timor Oriental", "Togo", "Tonga",
+            "Túnez", "Turkmenistán", "Turquía", "Ucrania", "Uganda", "Uruguay", "Uzbekistán", "Vanuatu", "Venezuela",
             "Vietnam", "Yemen", "Yibuti", "Zambia", "Zimbabue"
         ];
         
+        // Objeto de mapeo de nombres de países a códigos de bandera (ISO 3166-1 alpha-2)
+        const countryFlagCodes = {
+            "Afganistán": "af", "Albania": "al", "Alemania": "de", "Angola": "ao", "Arabia Saudita": "sa", "Argelia": "dz",
+            "Argentina": "ar", "Armenia": "am", "Australia": "au", "Austria": "at", "Azerbaiyán": "az", "Las Bahamas": "bs",
+            "Bangladés": "bd", "Bélgica": "be", "Belice": "bz", "Benín": "bj", "Bielorrusia": "by", "Bolivia": "bo",
+            "Bosnia y Herzegovina": "ba", "Botsuana": "bw", "Brasil": "br", "Brunéi": "bn", "Bulgaria": "bg", "Burkina Faso": "bf",
+            "Burundi": "bi", "Bután": "bt", "Camboya": "kh", "Camerún": "cm", "Canadá": "ca", "Catar": "qa", "Chad": "td",
+            "Chile": "cl", "China": "cn", "Colombia": "co", "Congo": "cg", "Corea del Norte": "kp", "Corea del Sur": "kr",
+            "Costa de Marfil": "ci", "Costa Rica": "cr", "Croacia": "hr", "Cuba": "cu", "Dinamarca": "dk", "Ecuador": "ec",
+            "Egipto": "eg", "El Salvador": "sv", "Emiratos Árabes Unidos": "ae", "Eritrea": "er", "Eslovaquia": "sk",
+            "Eslovenia": "si", "España": "es", "Estados Unidos": "us", "Estonia": "ee", "Esuatini": "sz", "Etiopía": "et",
+            "Filipinas": "ph", "Finlandia": "fi", "Fiji": "fj", "Francia": "fr", "Gabón": "ga", "Gambia": "gm",
+            "Georgia": "ge", "Ghana": "gh", "Grecia": "gr", "Guatemala": "gt", "Guinea": "gn", "Guinea-Bisáu": "gw",
+            "Guyana": "gy", "Guayana": "gl", "Groenlandia": "gl", "Haití": "ht", "Honduras": "hn", "Hungría": "hu",
+            "India": "in", "Indonesia": "id", "Irak": "iq", "Irán": "ir", "Irlanda": "ie", "Islandia": "is", "Islas Salomón": "sb",
+            "Israel": "il", "Italia": "it", "Jamaica": "jm", "Japón": "jp", "Jordania": "jo", "Kazajistán": "kz",
+            "Kenia": "ke", "Kirguistán": "kg", "Kuwait": "kw", "Laos": "la", "Lesoto": "ls", "Letonia": "lv",
+            "Líbano": "lb", "Liberia": "lr", "Libia": "ly", "Lituania": "lt", "Luxemburgo": "lu", "Macedonia": "mk",
+            "Madagascar": "mg", "Malasia": "my", "Malaui": "mw", "Mali": "ml", "Marruecos": "ma", "Mauritania": "mr",
+            "México": "mx", "Moldavia": "md", "Myanmar": "mm", "Mongolia": "mn", "Montenegro": "me", "Mozambique": "mz",
+            "Namibia": "na", "Nepal": "np", "Nicaragua": "ni", "Níger": "ne", "Nigeria": "ng", "Noruega": "no",
+            "Nueva Zelanda": "nz", "Nueva Caledonia": "nc", "Omán": "om", "Países Bajos": "nl", "Pakistán": "pk",
+            "Panamá": "pa", "Papúa Nueva Guinea": "pg", "Paraguay": "py", "Perú": "pe", "Polonia": "pl",
+            "Polinesia Francesa": "pf", "Portugal": "pt", "Puerto Rico": "pr", "Reino Unido": "gb", "República Centroafricana": "cf",
+            "Chequia": "cz", "República Dem. del Congo": "cd", "República Dominicana": "do", "Ruanda": "rw", "Rumanía": "ro",
+            "Rusia": "ru", "Sahara Occidental": "eh", "Samoa": "ws", "Senegal": "sn", "Serbia": "rs", "Sierra Leona": "sl",
+            "Singapur": "sg", "Siria": "sy", "Somalia": "so", "Sri Lanka": "lk", "Sudáfrica": "za", "Sudán": "sd",
+            "Sudán del Sur": "ss", "Suecia": "se", "Suiza": "ch", "Surinam": "sr", "Tailandia": "th", "Tanzania": "tz",
+            "Taiwán": "tw", "Tayikistán": "tj", "Timor Oriental": "tl", "Togo": "tg", "Tonga": "to", "Túnez": "tn",
+            "Turkmenistán": "tm", "Turquía": "tr", "Ucrania": "ua", "Uganda": "ug", "Uruguay": "uy", "Uzbekistán": "uz",
+            "Vanuatu": "vu", "Venezuela": "ve", "Vietnam": "vn", "Yemen": "ye", "Yibuti": "dj", "Zambia": "zm",
+            "Zimbabue": "zw"
+        };
+        // Lista de productos
         const allProducts = [
-            "Cebada", "Avena", "Trigo", "Limones", "Peras", "Manzanas", "Petroleo", "Carbon", "Soja", "Maiz",
-            "Bananas", "Zapallo", "Vacas", "Cabras", "Cacao", "Cafe", "Cerdos", "Pescados", "Oro", "Plata",
-            "Arroz", "Niquel", "Aluminio", "Hierro", "Robot", "Vainilla", "Higos", "Autos", "Naranjas"
+            "Aceitunas", "Ajos", "Alcachofas", "Algodón", "Almendras", "Aluminio", "Anís", "Arroz", "Asno", "Autos",
+            "Avellanas", "Avena", "Aviones", "Bananas", "Barcos", "Batata(camote)", "Berengenas", "Biocombustibles", "Búfalo", "Caballos",
+            "Cabras", "Cacao", "Café", "Cal", "Camello", "Canela", "Caña Azucar", "Carbón", "Castañas", "Cebada",
+            "Cebollas", "Celulares", "Cemento", "Centeno", "Cerdos", "Cereza", "Cerveza", "Ciruelas", "Cobalto", "Cobre",
+            "Coco", "Coliflores", "Conejos", "Cuero", "Diamantes", "Energía Biomasa", "Energía Eolica", "Energía Geotérmica", "Energía Hidroeléctrica", "Energía Mareomotriz",
+            "Energía Solar", "Electrodomésticos", "Energía Nuclear", "Esparragos", "Especias", "Espinacas", "Estaño", "Frambuesas", "Frutillas",
+            "Gansos", "Garbanzos", "Gas", "Girasol", "Habas", "Hierro", "Higos", "Hongos", "Huevos", "Kiwi",
+            "Lana", "Leche Cabra", "Leche Vaca", "Lechugas", "Lentejas", "Limones", "Litio", "Lúpulo", "Madera", "Magnesio",
+            "Maíz", "Mangos", "Maní", "Manzanas", "Mariscos", "Melones", "Mercurio", "Microprocesadores", "Miel", "Mijo",
+            "Motos", "Naranjas", "Niquel", "Nueces", "Nuez Moscada", "Oro", "Ovejas", "Paladio", "Paltas", "Papas",
+            "Papaya", "Patos", "Pavos", "Pepinos", "Peras", "Pescados", "Petróleo", "Pimientos", "Piñas", "Pistachos",
+            "Plata", "Platino", "Plomo", "Pollos", "Pomelos", "Porotos", "Potacio", "Remolachas", "Robots", "Sandías",
+            "Soja", "Sorgo", "Tabaco", "Taro", "Té", "Titanio", "Tomates", "Tractores", "Trigo", "Uranio",
+            "Uvas", "Vacas", "Vainillas", "Vinos", "Yerba Mate", "Yeso", "Zanahorias", "Zapallos", "Zinc"
         ];
+        
+        // Objeto con la información de países productores
+        const productCountries = {
+             "Aceitunas": ["España", "Italia", "Marruecos", "Turquía", "Grecia" ],
+            "Ajos": ["China", "India", "Bangladesh", "Rep.Corea del Norte", "Egipto"],
+            "Alcachofas": ["Italia", "Egipto", "España", "Perú", "Argelia"],
+            "Algodón": ["India", "China", "USA", "Brasil", "Pakistán"],
+            "Almendras": ["USA", "España", "Irán", "Marruecos", "Siria"],
+            "Aluminio": ["China", "Rusia", "Canadá", "India", "Australia"],
+            "Anís": ["India", "Siria", "China", "Egipto", "Turquía"],
+            "Arroz": ["China", "India", "Indonesia", "Bangladesh", "Vietnam"],
+            "Asno": ["Etiopía", "China", "Pakistán", "México", "Egipto"],
+            "Autos": ["China", "USA", "Japón", "India", "Alemania"],
+            "Avellanas": ["Turquía", "Italia", "USA", "Azerbaiyán", "Georgia"],
+            "Avena": ["Rusia", "Canadá", "Polonia", "Australia", "Finlandia"],
+            "Aviones": ["Francia", "Alemania", "España", "Reino Unido", "Japón"],
+            "Bananas": ["India", "China", "Indonesia", "Brasil", "Ecuador"],
+            "Barcos": ["China", "Corea del Sur", "Japón", "Filipinas", "Taiwan"],
+            "Batata(camote)": ["China", "Uganda", "Nigeria", "Indonesia", "Vietnam"],
+            "Berengenas": ["China", "India", "Egipto", "Turquía", "Irán"],
+            "Biocombustibles": ["USA", "Brasil", "Alemania", "Argentina", "Francia"],
+            "Búfalo": ["India", "Pakistán", "China", "Egipto", "Nepal"],
+            "Caballos": ["USA", "México", "China", "Brasil", "Mongolia"],
+            "Cabras": ["China", "India", "Pakistán", "Sudán", "Nigeria"],
+            "Cacao": ["Costa de Marfil", "Ghana", "Indonesia", "Nigeria", "Camerún"],
+            "Café": ["Brasil", "Vietnam", "Colombia", "Indonesia", "Etiopía"],
+            "Cal": ["Francia", "Alemania", "Bélgica", "Malasia", "Vietnam"],
+            "Camello": ["Irán", "Yibuti", "Marruecos", "Libia", "Siria"],
+            "Canela": ["Indonesia", "China", "Vietnam", "Sri Lanka", "Madagascar"],
+            "Caña Azucar": ["Brasil", "India", "China", "Tailandia", "Pakistán"],
+            "Carbón": ["China", "India", "Indonesia", "USA", "Australia"],
+            "Castañas": ["China", "Bolivia", "Turquía", "Corea del Sur", "Italia"],
+            "Cebada": ["Rusia", "Francia", "Alemania", "Australia", "España"],
+            "Cebollas": ["China", "India", "Egipto", "USA", "Irán"],
+            "Celulares": ["China", "Hongkong", "Vietnam", "Países Bajos", "USA"],
+            "Cemento": ["China", "India", "Vietnam", "USA", "Egipto"],
+            "Centeno": ["China", "India", "Rusia", "USA", "Canadá"],
+            "Cerdos": ["China", "USA", "Alemania", "Francia", "España"],
+            "Cereza": ["Turquía", "USA", "Irán", "Chile", "Uzbekistán"],
+            "Cerveza": ["China", "USA", "Brasil", "Alemania", "Reino Unido"],
+            "Ciruelas": ["China", "Rumania", "Serbia", "USA", "Turquía"],
+            "Cobalto": ["Congo", "Rusia", "Cuba", "Australia", "Filipinas"],
+            "Cobre": ["Chile", "Perú", "China", "USA", "Congo"],
+            "Coco": ["Indonesia", "India", "Filipinas", "Sri Lanka", "Brasil"],
+            "Coliflores": ["China", "India", "USA", "España", "Mexico"],
+            "Conejos": ["China", "Colombia", "Venezuela", "Uzbekistan", "Kazajstan"],
+            "Cuero": ["China", "Vietnam", "Italia", "Francia", "Alemania"],
+            "Diamantes": ["Rusia", "Botsuana", "Congo", "Australia", "Canadá"],
+            "Energía Biomasa": ["USA", "Brasil", "Indonesia", "Alemania", "Tailandia"],
+            "Energía Eolica": ["China", "USA", "Alemania", "España", "Reino Unido"],
+            "Energía Geotérmica": ["USA", "China", "Filipinas", "Islandia", "Suecia"],
+            "Energía Hidroeléctrica": ["China", "Canadá", "Brasil", "USA", "Noruega"],
+            "Energía Mareomotriz": ["Corea del Sur",  "Francia", "Canadá", "Reino Unido", "Noruega"],
+            "Energía Solar": ["China", "USA", "Japón", "Alemania", "India"],
+            "Electrodomésticos": ["China", "USA", "Japón", "Alemania", "Corea del Sur"],
+            "Energía Nuclear": ["USA", "China", "Francia", "Rusia", "Corea del Sur"],
+            "Esparragos": ["Perú", "México", "USA", "Paises Bajos", "España"],
+            "Especias": ["China", "India", "Alemania", "Indonesia", "Siria"],
+            "Espinacas": ["China", "USA", "Japón", "Turquía", "Indonesia"],
+            "Estaño": ["China", "Indonesia", "Bolivia", "Perú", "Brasil"],
+            "Frambuesas": ["Rusia", "USA", "Polonia", "México", "Serbia"],
+            "Frutillas": ["China", "USA", "México", "Egipto", "Turquia"],
+            "Gansos": ["China", "Egipto", "Hungría", "Polonia", "Italia"],
+            "Garbanzos": ["India", "Australia", "Myanmar", "Pakistán", "Turquía"],
+            "Gas": ["USA", "Rusia", "Irán", "China", "Canadá"],
+            "Girasol": ["Ucrania", "Rusia", "Argentina", "China", "Rumania"],
+            "Habas": ["Australia", "Francia", "Reino Unido", "China", "Perú"],
+            "Hierro": ["Australia", "Brasil", "China", "India", "Rusia"],
+            "Higos": ["Turquía", "Egipto", "Argelia", "Irán", "Marruecos"],
+            "Hongos": ["China", "Italia", "USA", "Países Bajos", "Polonia"],
+            "Huevos": ["China", "USA", "India", "Francia", "Alemania"],
+            "Kiwi": ["China", "Italia", "Nueva Zelanda", "Irán", "Chile"],
+            "Lana": ["China", "Australia", "Nueva Zelanda", "Reino Unido", "Turquía"],
+            "Leche Cabra": ["India", "Bangladesh", "Sudán", "Pakistán", "Grecia"],
+            "Leche Vaca": ["USA", "India", "China", "Brasil", "Alemania"],
+            "Lechugas": ["China", "USA", "España", "Italia", "India"],
+            "Lentejas": ["Canadá", "India", "Turquía", "USA", "Nepal"],
+            "Limones": ["India", "México", "China", "Argentina", "Brasil"],
+            "Litio": ["Australia", "Zimbabue", "Portugal", "China", "Brasil"],
+            "Lúpulo": ["USA", "Alemania", "Chequia", "China", "Polonia"],
+            "Madera": ["China", "USA", "Rusia", "Canadá", "Alemania"],
+            "Magnesio": ["China", "Rusia", "Israel", "Kazajistán", "Brasil"],
+            "Maíz": ["USA", "China", "Brasil", "Argentina", "Mexico"],
+            "Mangos": ["India", "China", "Tailandia", "México", "Indonesia"],
+            "Maní": ["China", "India", "Nigeria", "USA", "Sudán"],
+            "Manzanas": ["China", "USA", "Turquía", "Polonia", "India"],
+            "Mariscos": ["China", "Noruega", "Vietnam", "USA", "India"],
+            "Melones": ["China", "Turquía", "Irán", "Egipto", "India"],
+            "Mercurio": ["China", "Kazajistan", "Chile", "Rusia", "Perú"],
+            "Microprocesadores": ["Taiwán", "Corea del Sur", "China", "USA", "Japón"],
+            "Miel": ["China", "Turquía", "Argentina", "Irán", "Ucrania"],
+            "Mijo": ["India", "Níger", "China", "Nigeria", "Malí"],
+            "Motos": ["India", "China", "Indonesia", "Vietnam", "Pakistan"],
+            "Naranjas": ["Brasil", "China", "India", "USA", "México"],
+            "Niquel": ["Indonesia", "Filipinas", "Rusia", "Francia", "Australia"],
+            "Nueces": ["China", "USA", "Irán", "Turquía", "México"],
+            "Nuez Moscada": ["Guatemala", "Indonesia", "India", "Nepal", "Paises Bajos"],
+            "Oro": ["China", "Australia", "Rusia", "USA", "Canadá"],
+            "Ovejas": ["China", "Australia", "Nueva Zelanda", "India", "Irán"],
+            "Paladio": ["Sudáfrica", "Rusia", "Canadá", "USA", "Zimbabue"],
+            "Paltas": ["México", "República Dominicana", "Perú", "Indonesia", "Colombia"],
+            "Papas": ["China", "India", "Rusia", "Ucrania", "USA"],
+            "Papaya": ["India", "Brasil", "México", "Indonesia", "República Dominicana"],
+            "Patos": ["China", "Hungria", "Alemania", "Paise Bajos", "Francia"],
+            "Pavos": ["USA", "Francia", "Italia", "Reino Unido", "Alemania"],
+            "Pepinos": ["China", "Rusia", "Turquía", "Irán", "Ucrania"],
+            "Peras": ["China", "Argentina", "USA", "Italia", "Turquía"],
+            "Pescados": ["China", "Indonesia", "USA", "Rusia", "Japón"],
+            "Petróleo": ["USA", "Rusia", "Arabia Saudita", "Canadá", "Irak"],
+            "Pimientos": ["China", "Turquía", "México", "Nigeria", "España"],
+            "Piñas": ["Costa Rica", "Brasil", "Filipinas", "India", "Tailandia"],
+            "Pistachos": ["USA", "Irán", "Turquía", "Siria", "Grecia"],
+            "Plata": ["México", "Perú", "China", "Rusia", "Polonia"],
+            "Platino": ["Sudáfrica", "Rusia", "Zimbabue", "Canadá", "USA"],
+            "Plomo": ["China", "Australia", "Perú", "USA", "México"],
+            "Pollos": ["USA", "China", "Brasil", "Rusia", "Polonia"],
+            "Pomelos": ["China", "USA", "Vietnam", "México", "Sudáfrica"],
+            "Porotos": ["Myanmar", "India", "Brasil", "China", "México"],
+            "Potacio": ["Canadá", "Rusia", "Bielorrusia", "China", "Alemania"],
+            "Remolachas": ["Rusia", "Francia", "USA", "Alemania", "Turquía"],
+            "Robots": ["Singapur", "Corea del Sur", "Japón", "Alemania", "Suecia"],
+            "Sandías": ["China", "Turquía", "Irán", "Brasil", "Uzbekistán"],
+            "Soja": ["USA", "Brasil", "Argentina", "China", "Paraguay"],
+            "Sorgo": ["USA", "Nigeria", "México", "Sudán", "Etiopía"],
+            "Tabaco": ["China", "India", "Brasil", "USA", "Zimbabue"],
+            "Taro": ["Nigeria", "Etiopía", "China", "Camerún", "Ghana"],
+            "Té": ["China", "India", "Kenia", "Sri Lanka", "Turquía"],
+            "Titanio": ["Sudafrica", "Mozambique", "Sierra Leona", "Kenia", "Ucrania"],
+            "Tomates": ["China", "India", "USA", "Turquía", "Egipto"],
+            "Tractores": ["USA", "India", "Japón", "Italia", "Polonia"],
+            "Trigo": ["China", "India", "Rusia", "USA", "Francia"],
+            "Uranio": ["Canadá", "Australia", "Kazajistán", "Níger", "Namibia"],
+            "Uvas": ["China", "Italia", "USA", "Francia", "España"],
+            "Vacas": ["Argentina", "Australia", "México", "Pakistan", "Rusia"],
+            "Vainillas": ["Indonesia", "Madagascar", "China", "Papúa Nueva Guinea","México"],
+            "Vinos": ["Italia", "Francia", "España", "USA", "Australia"],
+            "Yerba Mate": ["Argentina", "Brasil", "Paraguay", "Uruguay", "Bolivia"],
+            "Yeso": ["USA", "China", "Canadá", "Irán", "Tailandia"],
+            "Zanahorias": ["China", "Uzbekistán", "Rusia", "USA", "Ucrania"],
+            "Zapallos": ["China", "India", "Rusia", "Ucrania", "USA"],
+            "Zinc": ["China", "USA", "Alemania", "Japón", "Paises Bajos"]
 
-        let shuffledCountries = [];
-        let currentIndex = 0;
-        let visitedCountries = [];
+        };
+        
+        // Nuevo objeto con la información detallada de cada país
+        const countryInfo = {
+            "Alemania": { continent: "Europa", products: 23, totalToCollect: 800 },
+            "Bélgica": { continent: "Europa", products: 1, totalToCollect: 90 },
+            "Bielorrusia": { continent: "Europa", products: 1, totalToCollect: 90 },
+            "España": { continent: "Europa", products: 13, totalToCollect: 480 },
+            "Finlandia": { continent: "Europa", products: 1, totalToCollect: 70 },
+            "Francia": { continent: "Europa", products: 17, totalToCollect: 720 },
+            "Polonia": { continent: "Europa", products: 9, totalToCollect: 290 },
+            "Portugal": { continent: "Europa", products: 1, totalToCollect: 90 },
+            "Reino Unido": { continent: "Europa", products: 7, totalToCollect: 250 },
+            "Grecia": { continent: "Europa", products: 3, totalToCollect: 110 },
+            "Chequia": { continent: "Europa", products: 1, totalToCollect: 90 },
+            "Noruega": { continent: "Europa", products: 3, totalToCollect: 140 },
+            "Hungría": { continent: "Europa", products: 2, totalToCollect: 140 },
+            "Rumanía": { continent: "Europa", products: 2, totalToCollect: 120 },
+            "Países Bajos": { continent: "Europa", products: 6, totalToCollect: 210 },
+            "Rusia": { continent: "Europa", products: 30, totalToCollect: 1360 },
+            "Islandia": { continent: "Europa", products: 1, totalToCollect: 80 },
+            "Italia": { continent: "Europa", products: 14, totalToCollect: 630 },
+            "Serbia": { continent: "Europa", products: 2, totalToCollect: 110 },
+            "Ucrania": { continent: "Europa", products: 7, totalToCollect: 250 },
+            "Suecia": { continent: "Europa", products: 2, totalToCollect: 90 },
+            "Suiza": { continent: "Europa", products: 0, totalToCollect: 50 },
+            "Eslovenia": { continent: "Europa", products: 0, totalToCollect: 50 },
+            "Croacia": { continent: "Europa", products: 0, totalToCollect: 50 },
+            "Bosnia y Herzegovina": { continent: "Europa", products: 0, totalToCollect: 50 },
+            "Montenegro": { continent: "Europa", products: 0, totalToCollect: 50 },
+            "Macedonia": { continent: "Europa", products: 0, totalToCollect: 50 },
+            "Bulgaria": { continent: "Europa", products: 0, totalToCollect: 50 },
+            "Moldavia": { continent: "Europa", products: 0, totalToCollect: 50 },
+            "Austria": { continent: "Europa", products: 0, totalToCollect: 50 },
+            "Eslovaquia": { continent: "Europa", products: 0, totalToCollect: 50 },
+            "Irlanda": { continent: "Europa", products: 0, totalToCollect: 50 },
+            "Dinamarca": { continent: "Europa", products: 0, totalToCollect: 50 },
+            "Estonia": { continent: "Europa", products: 0, totalToCollect: 50 },
+            "Letonia": { continent: "Europa", products: 0, totalToCollect: 50 },
+            "Lituania": { continent: "Europa", products: 0, totalToCollect: 50 },
+            "Albania": { continent: "Europa", products: 0, totalToCollect: 50 },
+            "Luxemburgo": { continent: "Europa", products: 0, totalToCollect: 50 },
+            "Costa Rica": { continent: "América", products: 1, totalToCollect: 110 },
+            "Cuba": { continent: "América", products: 1, totalToCollect: 90 },
+            "Chile": { continent: "América", products: 4, totalToCollect: 150 },
+            "Ecuador": { continent: "América", products: 1, totalToCollect: 70 },
+            "Bolivia": { continent: "América", products: 3, totalToCollect: 160 },
+            "Brasil": { continent: "América", products: 26, totalToCollect: 1070 },
+            "Argentina": { continent: "América", products: 9, totalToCollect: 430 },
+            "Colombia": { continent: "América", products: 3, totalToCollect: 160 },
+            "Canadá": { continent: "América", products: 16, totalToCollect: 660 },
+            "Guatemala": { continent: "América", products: 1, totalToCollect: 110 },
+            "República Dominicana": { continent: "América", products: 1, totalToCollect: 120 },
+            "México": { continent: "América", products: 21, totalToCollect: 780 },
+            "Paraguay": { continent: "América", products: 2, totalToCollect: 110 },
+            "Perú": { continent: "América", products: 9, totalToCollect: 390 },
+            "Venezuela": { continent: "América", products: 1, totalToCollect: 90 },
+            "Estados Unidos": { continent: "América", products: 68, totalToCollect: 3030 },
+            "Uruguay": { continent: "América", products: 1, totalToCollect: 80 },
+            "Guayana": { continent: "América", products: 0, totalToCollect: 50 },
+            "Surinam": { continent: "América", products: 0, totalToCollect: 50 },
+            "Guyana": { continent: "América", products: 0, totalToCollect: 50 },
+            "Panamá": { continent: "América", products: 0, totalToCollect: 50 },
+            "Nicaragua": { continent: "América", products: 0, totalToCollect: 50 },
+            "Honduras": { continent: "América", products: 0, totalToCollect: 50 },
+            "El Salvador": { continent: "América", products: 0, totalToCollect: 50 },
+            "Belice": { continent: "América", products: 0, totalToCollect: 50 },
+            "Puerto Rico": { continent: "América", products: 0, totalToCollect: 50 },
+            "Haití": { continent: "América", products: 0, totalToCollect: 50 },
+            "Jamaica": { continent: "América", products: 0, totalToCollect: 50 },
+            "Las Bahamas": { continent: "América", products: 0, totalToCollect: 50 },
+            "Groenlandia": { continent: "América", products: 0, totalToCollect: 50 },
+            "Bangladés": { continent: "Asia", products: 3, totalToCollect: 170 },
+            "China": { continent: "Asia", products: 95, totalToCollect: 5130 },
+            "Arabia Saudita": { continent: "Asia", products: 1, totalToCollect: 90 },
+            "Filipinas": { continent: "Asia", products: 6, totalToCollect: 270 },
+            "Corea del Sur": { continent: "Asia", products: 7, totalToCollect: 330 },
+            "Azerbaiyán": { continent: "Asia", products: 1, totalToCollect: 80 },
+            "Mongolia": { continent: "Asia", products: 1, totalToCollect: 70 },
+            "Japón": { continent: "Asia", products: 11, totalToCollect: 420 },
+            "Myanmar": { continent: "Asia", products: 2, totalToCollect: 150 },
+            "Nepal": { continent: "Asia", products: 3, totalToCollect: 120 },
+            "Indonesia": { continent: "Asia", products: 20, totalToCollect: 870 },
+            "Georgia": { continent: "Asia", products: 1, totalToCollect: 70 },
+            "Kazajistán": { continent: "Asia", products: 4, totalToCollect: 190 },
+            "Corea del Norte": { continent: "Asia", products: 1, totalToCollect: 80 },
+            "Hong Kong": { continent: "Asia", products: 1, totalToCollect: 100 },
+            "Irak": { continent: "Asia", products: 1, totalToCollect: 70 },
+            "Malasia": { continent: "Asia", products: 1, totalToCollect: 80 },
+            "India": { continent: "Asia", products: 47, totalToCollect: 2230 },
+            "Irán": { continent: "Asia", products: 16, totalToCollect: 610 },
+            "Pakistán": { continent: "Asia", products: 9, totalToCollect: 330 },
+            "Israel": { continent: "Asia", products: 1, totalToCollect: 90 },
+            "Uzbekistán": { continent: "Asia", products: 4, totalToCollect: 170 },
+            "Singapur": { continent: "Asia", products: 1, totalToCollect: 110 },
+            "Siria": { continent: "Asia", products: 5, totalToCollect: 190 },
+            "Sri Lanka": { continent: "Asia", products: 3, totalToCollect: 140 },
+            "Vietnam": { continent: "Asia", products: 11, totalToCollect: 440 },
+            "Tailandia": { continent: "Asia", products: 5, totalToCollect: 180 },
+            "Taiwán": { continent: "Asia", products: 2, totalToCollect: 130 },
+            "Turquía": { continent: "Asia", products: 25, totalToCollect: 940 },
+            "Afganistán": { continent: "Asia", products: 0, totalToCollect: 50 },
+            "Armenia": { continent: "Asia", products: 0, totalToCollect: 50 },
+            "Brunéi": { continent: "Asia", products: 0, totalToCollect: 50 },
+            "Bután": { continent: "Asia", products: 0, totalToCollect: 50 },
+            "Camboya": { continent: "Asia", products: 0, totalToCollect: 50 },
+            "Emiratos Árabes Unidos": { continent: "Asia", products: 0, totalToCollect: 50 },
+            "Jordania": { continent: "Asia", products: 0, totalToCollect: 50 },
+            "Kirguistán": { continent: "Asia", products: 0, totalToCollect: 50 },
+            "Kuwait": { continent: "Asia", products: 0, totalToCollect: 50 },
+            "Laos": { continent: "Asia", products: 0, totalToCollect: 50 },
+            "Líbano": { continent: "Asia", products: 0, totalToCollect: 50 },
+            "Omán": { continent: "Asia", products: 0, totalToCollect: 50 },
+            "Catar": { continent: "Asia", products: 0, totalToCollect: 50 },
+            "Tayikistán": { continent: "Asia", products: 0, totalToCollect: 50 },
+            "Timor Oriental": { continent: "Asia", products: 0, totalToCollect: 50 },
+            "Turkmenistán": { continent: "Asia", products: 0, totalToCollect: 50 },
+            "Yemen": { continent: "Asia", products: 0, totalToCollect: 50 },
+            "Australia": { continent: "Oceanía", products: 18, totalToCollect: 780 },
+            "Nueva Zelanda": { continent: "Oceanía", products: 3, totalToCollect: 170 },
+            "Papúa Nueva Guinea": { continent: "Oceanía", products: 1, totalToCollect: 80 },
+            "Islas Salomón": { continent: "Oceanía", products: 0, totalToCollect: 50 },
+            "Vanuatu": { continent: "Oceanía", products: 0, totalToCollect: 50 },
+            "Nueva Caledonia": { continent: "Oceanía", products: 0, totalToCollect: 50 },
+            "Fiyi": { continent: "Oceanía", products: 0, totalToCollect: 50 },
+            "Tonga": { continent: "Oceanía", products: 0, totalToCollect: 50 },
+            "Samoa": { continent: "Oceanía", products: 0, totalToCollect: 50 },
+            "Polinesia Francesa": { continent: "Oceanía", products: 0, totalToCollect: 50 },
+            "Egipto": { continent: "África", products: 13, totalToCollect: 480 },
+            "Botsuana": { continent: "África", products: 1, totalToCollect: 100 },
+            "Argelia": { continent: "África", products: 2, totalToCollect: 110 },
+            "Etiopía": { continent: "África", products: 4, totalToCollect: 200 },
+            "Camerún": { continent: "África", products: 2, totalToCollect: 100 },
+            "Congo": { continent: "África", products: 3, totalToCollect: 170 },
+            "Costa de Marfil": { continent: "África", products: 1, totalToCollect: 110 },
+            "Mozambique": { continent: "África", products: 1, totalToCollect: 100 },
+            "Namibia": { continent: "África", products: 1, totalToCollect: 70 },
+            "Níger": { continent: "África", products: 2, totalToCollect: 130 },
+            "Ghana": { continent: "África", products: 2, totalToCollect: 120 },
+            "Nigeria": { continent: "África", products: 8, totalToCollect: 350 },
+            "Kenia": { continent: "África", products: 2, totalToCollect: 120 },
+            "Libia": { continent: "África", products: 1, totalToCollect: 80 },
+            "Madagascar": { continent: "África", products: 2, totalToCollect: 120 },
+            "Mali": { continent: "África", products: 1, totalToCollect: 70 },
+            "Marruecos": { continent: "África", products: 4, totalToCollect: 180 },
+            "Sierra Leona": { continent: "África", products: 1, totalToCollect: 90 },
+            "Uganda": { continent: "África", products: 1, totalToCollect: 100 },
+            "Sudáfrica": { continent: "África", products: 4, totalToCollect: 250 },
+            "Sudán": { continent: "África", products: 4, totalToCollect: 170 },
+            "Yibuti": { continent: "África", products: 1, totalToCollect: 100 },
+            "Zimbabue": { continent: "África", products: 4, totalToCollect: 180 },
+            "Angola": { continent: "África", products: 0, totalToCollect: 50 },
+            "Benín": { continent: "África", products: 0, totalToCollect: 50 },
+            "Burkina Faso": { continent: "África", products: 0, totalToCollect: 50 },
+            "Burundi": { continent: "África", products: 0, totalToCollect: 50 },
+            "Chad": { continent: "África", products: 0, totalToCollect: 50 },
+            "Eritrea": { continent: "África", products: 0, totalToCollect: 50 },
+            "Esuatini": { continent: "África", products: 0, totalToCollect: 50 },
+            "Gabón": { continent: "África", products: 0, totalToCollect: 50 },
+            "Gambia": { continent: "África", products: 0, totalToCollect: 50 },
+            "Guinea": { continent: "África", products: 0, totalToCollect: 50 },
+            "Guinea-Bisáu": { continent: "África", products: 0, totalToCollect: 50 },
+            "Lesoto": { continent: "África", products: 0, totalToCollect: 50 },
+            "Liberia": { continent: "África", products: 0, totalToCollect: 50 },
+            "Malaui": { continent: "África", products: 0, totalToCollect: 50 },
+            "Mauritania": { continent: "África", products: 0, totalToCollect: 50 },
+            "República Centroafricana": { continent: "África", products: 0, totalToCollect: 50 },
+            "República Dem. del Congo": { continent: "África", products: 0, totalToCollect: 50 },
+            "Ruanda": { continent: "África", products: 0, totalToCollect: 50 },
+            "Sahara Occidental": { continent: "África", products: 0, totalToCollect: 50 },
+            "Senegal": { continent: "África", products: 0, totalToCollect: 50 },
+            "Somalia": { continent: "África", products: 0, totalToCollect: 50 },
+            "Sudán del Sur": { continent: "África", products: 0, totalToCollect: 50 },
+            "Tanzania": { continent: "África", products: 0, totalToCollect: 50 },
+            "Togo": { continent: "África", products: 0, totalToCollect: 50 },
+            "Túnez": { continent: "África", products: 0, totalToCollect: 50 },
+            "Zambia": { continent: "África", products: 0, totalToCollect: 50 }
+        };
 
-        let shuffledProducts = [];
-        let currentProductIndex = 0;
-        let visitedProducts = [];
-
-        // Obtener referencias a los elementos del DOM
-        const loginScreen = document.getElementById('loginScreen');
+        // Lista de eventos (solo el texto)
+        const allEvents = [
+            "1-Por erupción de un volcán no se podrán tomar vuelos en esta partida",
+            "2-Una Crisis en el Continente de América no permite ingresos en esta jornada en esos paises",
+            "3-Sin Novedades",
+            "4-Una Crisis en el Continente de Europa no permite ingresos en esta jornada en esos paises",
+            "5-Sin Novedades",
+            "6-Una Crisis en el Continente de Africa no permite ingresos en esta jornada en esos paises",
+            "7-Por escases de combustible no se podrán tomar pasajes de taxi en esta partida",
+            "8-Una Crisis en el Continente de Asia no permite ingresos en esta jornada en esos paises",
+            "9-Sin Novedades",
+            "10-Una Crisis en el Continente de Oceania no permite ingresos en esta jornada en esos paises",
+            "11-Sin Novedades",
+            "12-Gran apertura de mercados en América genera ganacias de $20 por país de ese continente",
+            "13-Gran apertura de mercados en Oceania genera ganacias de $20 por país de ese continente",
+            "14-Gran apertura de mercados en Europa genera ganacias de $20 por país de ese continente",
+            "15-Gran apertura de mercados en Asia genera ganacias de $20 por país de ese continente",
+            "16-Gran apertura de mercados en Africa genera ganacias de $20 por país de ese continente",
+            "17-Sin Novedades",
+            "18-Guerra entre países de América genera perdidas (dueño de cada país de ese continente paga $20 por cada país)",
+            "19-Guerra entre países de Africa genera perdidas (dueño de cada país de ese continente paga $20 por cada país)",
+            "20-Guerra entre países de Europa genera perdidas (dueño de cada país de ese continente paga $20 por cada país)",
+            "21-Guerra entre países de Asia genera perdidas (dueño de cada país de ese continente paga $20 por cada país)",
+            "22-Guerra entre países de Oceania genera perdidas (dueño de cada país de ese continente paga $20 por cada país)",
+            "23-Por paro de ferroviarios no se podrán tomar pasajes de Tren en esta partida",
+            "24-Sin Novedades",
+            "25-Un aumento en el consumo genera ganancias en todo el mundo. Todos los participantes cobran $100",
+            "26-Una pandemia aumenta los costos. Cada jugador debe pagar $50",
+            "27-Sin Novedades",
+            "28-Grandes descubrimientos realizados por la ciencia permiten que todos los participantes con países sin productos cobren $50 por cada país en posesión.",
+            "29-Sin Novedades",
+            "30-Los países de América se unen y potencian el mercado del continente. Cada participante cobra $50 por cada país.",
+            "31-Los países de Europa se unen y potencian el mercado del continente. Cada participante cobra $50 por cada país.",
+            "32-Los países de Africase unen y potencian el mercado del continente. Cada participante cobra $50 por cada país.",
+            "33-Los países de Asia se unen y potencian el mercado del continente. Cada participante cobra $50 por cada país.",
+            "34-Los países de Oceania se unen y potencian el mercado del continente. Cada participante cobra $50 por cada país.",
+            "35-Sin Novedades",
+            "36-Elevada inflación mundial aumenta los precios de los productos. Todos los participantes deben pagar $20 por cada país en posesión.",
+            "37-Sin Novedades",
+            "38-Sin Novedades",
+            "39-Una suba de las tasas de interés perjudica el crédito. Todos los jugadores deben paga $30",
+            "40-Baja de las tasas de interés alienta la inversión. Cada jugador cobra $20",
+            "41-Sin Novedades",
+            "42-Aumenta el desempleo en América, generando pérdidas. Cada jugador paga por cada país $10",
+            "43-Aumenta el desempleo en Europa, generando pérdidas. Cada jugador paga por cada país $10",
+            "44-Aumenta el desempleo en Africa, generando pérdidas. Cada jugador paga por cada país $10",
+            "45-Aumenta el desempleo en Asia, generando pérdidas. Cada jugador paga por cada país $10",
+            "46-Aumenta el desempleo en Oceania, generando pérdidas. Cada jugador paga por cada país $10",
+            "47-Sin Novedades",
+            "48-Aumenta el empleo en América, generando ganancias. Cada jugador cobra por cada país $30",
+            "49-Aumenta el empleo en Europa, generando ganancias. Cada jugador cobra por cada país $30",
+            "50-Aumenta el empleo en Africa, generando ganancias. Cada jugador cobra por cada país $30",
+            "51-Aumenta el empleo en Asia, generando ganancias. Cada jugador cobra por cada país $30",
+            "52-Aumenta el empleo en Oceania, generando ganancias. Cada jugador cobra por cada país $30",
+            "53-Sin Novedades",
+            "54-Sin Novedades",
+            "55-China, USA, India, Rusia, Turquía, Brasil y Alemania deben paga $40 cada uno por conflitos de aranceles",
+            "56-México, Indonesia, Australia, Francia, Irán, Canadá y Italia deben paga $30 cada uno por conflitos de aranceles",
+            "57-Sin Novedades",
+            "58-España, Egipto, Vietnam, Japón, Polonia, Perú, Pakistán y Argentina deben paga $20 cada uno por conflitos de aranceles",
+            "59-América y Europa bajan impuestos y generan ganancia de $50 a cada jugador que tiene inversiones",
+            "60-Africa, Asia, y Oceania bajan impuestos y generan ganancia de $50 a cada jugador que tiene inversiones",
+            "61-Sin Novedades",
+            "62-Descubrimiento tecnológico en países que tiene 1 solo producto genera ganancia de $50 por cada país",
+            "63-Descubrimiento tecnológico en países que tienen 2 productos genera ganancia de $50 por cada país",
+            "64-Descubrimiento tecnológico en países que tienen 3 productos genera ganancia de $50 por cada país",
+            "65-Sin Novedades",
+            "66-Suba de impuestos en todo el planeta genera pérdidas. Cada jugados debe pagar $30",
+            "67-Sin Novedades",
+            "68-La Inteligencia Artificial mejora los procesos productivos. Todos los jugadores cobran $20",
+            "69-Sin Novedades",
+            "70-La tecnología mejora los transportes. Esto permite duplicar el número de dados por cada tiro solo en este juego"
+        ];
+        
+        // --- Referencias de Elementos HTML ---
         const mainAppScreen = document.getElementById('mainAppScreen');
-        const usernameInput = document.getElementById('usernameInput');
-        const passwordInput = document.getElementById('passwordInput');
-        const loginButton = document.getElementById('loginButton');
-        const loginMessage = document.getElementById('loginMessage');
-        const loggedInUsernameDisplay = document.getElementById('loggedInUsername');
-
         const newGameButton = document.getElementById('newGameButton');
-        const attemptsDisplay = document.getElementById('attemptsDisplay');
         const pickCountryButton = document.getElementById('pickCountryButton');
+        const attemptsDisplay = document.getElementById('attemptsDisplay');
         const currentCountryDisplay = document.getElementById('currentCountryDisplay');
-        const visitedCountriesList = document.getElementById('visitedCountriesList');
         const currentProductDisplay = document.getElementById('currentProductDisplay');
+        const eventMessageContainer = document.getElementById('eventMessageContainer');
+        const eventMessage = document.getElementById('eventMessage');
+        const visitedCountriesList = document.getElementById('visitedCountriesList');
         const visitedProductsList = document.getElementById('visitedProductsList');
-        const messageArea = document.getElementById('messageArea');
+        const visitedEventsList = document.getElementById('visitedEventsList');
+        
+        // Modal de Producto
+        const productModal = document.getElementById('productModal');
+        const productModalContent = document.getElementById('productModalContent');
+        const closeModalButton = document.getElementById('closeModalButton');
+        const productNameInModal = document.getElementById('productNameInModal');
+        const productInfo = document.getElementById('productInfo');
 
-        // --- Funciones de Lógica de la Interfaz (UI) ---
-        function showLoginScreen() {
-            loginScreen.classList.remove('hidden');
-            mainAppScreen.classList.add('hidden');
-            loginMessage.classList.add('hidden');
-            usernameInput.value = '';
-            passwordInput.value = '';
-        }
+        // Modal de País
+        const countryModal = document.getElementById('countryModal');
+        const countryModalContent = document.getElementById('countryModalContent');
+        const closeCountryModalButton = document.getElementById('closeCountryModalButton');
+        const countryNameInModal = document.getElementById('countryNameInModal');
+        const countryFlagImage = document.getElementById('countryFlagImage');
+        const countryContinent = document.getElementById('countryContinent');
+        const countryProducts = document.getElementById('countryProducts');
+        const countryTotal = document.getElementById('countryTotal');
+        
+        // Variables para la lógica de la simulación
+        let shuffledCountries = [...allCountries];
+        let countryIndex = 0;
+        
+        // Implementación de la lógica de barajado para productos
+        let shuffledProducts = [...allProducts];
+        let productIndex = 0;
 
-        function showMainApp() {
-            loginScreen.classList.add('hidden');
-            mainAppScreen.classList.remove('hidden');
-            loggedInUsernameDisplay.textContent = currentUsername;
-            startNewGame(); // Iniciar una nueva partida automáticamente al entrar
-        }
+        // Implementación de la lógica de barajado para eventos
+        let shuffledEvents = [...allEvents];
+        let eventIndex = 0;
 
-        function updateVisitedCountriesList() {
-            visitedCountriesList.innerHTML = '';
-            visitedCountries.forEach(country => {
-                const listItem = document.createElement('li');
-                listItem.textContent = country;
-                visitedCountriesList.appendChild(listItem);
-            });
-            visitedCountriesList.scrollTop = visitedCountriesList.scrollHeight;
-        }
-
-        function updateVisitedProductsList() {
-            visitedProductsList.innerHTML = '';
-            visitedProducts.forEach(product => {
-                const listItem = document.createElement('li');
-                listItem.textContent = product;
-                visitedProductsList.appendChild(listItem);
-            });
-            visitedProductsList.scrollTop = visitedProductsList.scrollHeight;
-        }
-
-        function resetGameDisplay() {
-            // Resetear displays
-            currentCountryDisplay.textContent = '¡Haz clic!';
-            currentCountryDisplay.classList.remove('bg-green-100', 'text-green-800', 'bg-gray-200', 'text-gray-500');
-            currentCountryDisplay.classList.add('bg-purple-100', 'text-purple-800');
-            
-            currentProductDisplay.textContent = '¡Haz clic!';
-            currentProductDisplay.classList.remove('bg-green-100', 'text-green-800', 'bg-gray-200', 'text-gray-500');
-            currentProductDisplay.classList.add('bg-purple-100', 'text-purple-800');
-
-            pickCountryButton.disabled = false;
-            pickCountryButton.textContent = 'Simulación';
-            messageArea.classList.add('hidden');
-            visitedCountriesList.innerHTML = '';
-            visitedProductsList.innerHTML = '';
-            attemptsDisplay.textContent = attempts;
-        }
-
-        function showLoginMessage(message, isError = false) {
-            loginMessage.textContent = message;
-            loginMessage.classList.remove('hidden');
-            loginMessage.classList.toggle('text-red-600', isError);
-            loginMessage.classList.toggle('text-green-600', !isError);
-            setTimeout(() => {
-                loginMessage.classList.add('hidden');
-            }, 5000);
-        }
-
-        // --- Lógica del Juego ---
+        // --- Funciones de Lógica de la Aplicación ---
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [array[i], array[j]] = [array[j], array[i]];
             }
-            return array;
+        }
+        
+        function startNewGame() {
+            attempts = 0;
+            attemptsDisplay.textContent = attempts;
+            
+            // Barajar países, productos y eventos al inicio de cada partida
+            shuffledCountries = [...allCountries];
+            shuffleArray(shuffledCountries);
+            countryIndex = 0;
+            
+            shuffledProducts = [...allProducts];
+            shuffleArray(shuffledProducts);
+            productIndex = 0;
+
+            shuffledEvents = [...allEvents];
+            shuffleArray(shuffledEvents);
+            eventIndex = 0;
+            
+            // Limpiar los displays y listas
+            currentCountryDisplay.textContent = '¡Haz clic!';
+            currentProductDisplay.textContent = '¡Haz clic!';
+            eventMessageContainer.classList.add('hidden');
+            visitedCountriesList.innerHTML = '';
+            visitedProductsList.innerHTML = '';
+            visitedEventsList.innerHTML = '';
+        }
+        
+        function showProductModal(productName) {
+            productNameInModal.textContent = productName;
+            productInfo.innerHTML = ''; // Limpiar lista anterior
+            
+            const countries = productCountries[productName];
+            if (countries && countries.length > 0) {
+                countries.forEach((country, index) => {
+                    const li = document.createElement('li');
+                    li.textContent = `${index + 1}. ${country}`;
+                    productInfo.appendChild(li);
+                });
+            } else {
+                productInfo.textContent = 'No se encontró información de países productores.';
+            }
+            productModal.classList.remove('hidden');
+            setTimeout(() => productModalContent.classList.remove('scale-95'), 10);
         }
 
-        function startNewGame() {
-            // Reiniciar el estado del juego
-            shuffledCountries = shuffleArray([...allCountries]);
-            currentIndex = 0;
-            visitedCountries = [];
-            
-            shuffledProducts = shuffleArray([...allProducts]);
-            currentProductIndex = 0;
-            visitedProducts = [];
-            
-            attempts = 0; // Reiniciar contador de jugadas
-            
-            resetGameDisplay();
-            showLoginMessage('Nueva partida iniciada.', false);
+        function showCountryModal() {
+            const currentCountryText = currentCountryDisplay.textContent.trim();
+            if (currentCountryText !== '¡Haz clic!' && currentCountryText !== '¡Todos los países mostrados!') {
+                countryNameInModal.textContent = currentCountryText;
+                
+                // Obtener los datos del país del nuevo objeto
+                const countryData = countryInfo[currentCountryText];
+                if (countryData) {
+                    countryContinent.textContent = `Continente: ${countryData.continent}`;
+                    countryProducts.textContent = `Productos: ${countryData.products}`;
+                    countryTotal.textContent = `Total a cobrar: $${countryData.totalToCollect}`;
+                } else {
+                    countryContinent.textContent = `Continente: No disponible`;
+                    countryProducts.textContent = `Productos: No disponible`;
+                    countryTotal.textContent = `Total a cobrar: No disponible`;
+                }
+
+                // Obtenemos el código del país para la bandera
+                const countryCode = countryFlagCodes[currentCountryText];
+                
+                if (countryCode) {
+                    countryFlagImage.src = `https://flagcdn.com/w320/${countryCode.toLowerCase()}.png`;
+                } else {
+                    countryFlagImage.src = ''; 
+                }
+
+                countryModal.classList.remove('hidden');
+                setTimeout(() => countryModalContent.classList.remove('scale-95'), 10);
+            }
         }
 
         // --- Event Listeners ---
-        loginButton.addEventListener('click', () => {
-            const username = usernameInput.value.trim();
-            const password = passwordInput.value.trim();
-            
-            // Verificación de credenciales codificadas
-            if (username === 'djas' && password === '12345') {
-                currentUsername = username;
-                showMainApp();
-                showLoginMessage('Bienvenido, ' + username + '!', false);
-            } else {
-                showLoginMessage('Usuario o contraseña incorrectos.', true);
-            }
-        });
-
+        window.onload = startNewGame; // Inicia el juego al cargar la página
+        
         newGameButton.addEventListener('click', startNewGame);
-
+        
         pickCountryButton.addEventListener('click', () => {
-            const MAX_ATTEMPTS = 20;
-
-            if (attempts >= MAX_ATTEMPTS) {
-                // Reiniciar el juego si se alcanza el límite
+            attempts++;
+            attemptsDisplay.textContent = attempts;
+            
+            // Lógica para reiniciar el juego automáticamente después de 20 jugadas
+            if (attempts > MAX_ATTEMPTS) {
+                eventMessageContainer.classList.remove('hidden');
+                eventMessage.textContent = `Se ha completado el ciclo de ${MAX_ATTEMPTS} jugadas. Iniciando nueva partida.`;
                 startNewGame();
-                messageArea.textContent = 'Límite de acciones. ¡Comienza de nuevo!';
-                messageArea.classList.remove('hidden');
                 return;
             }
 
-            attempts++;
-            attemptsDisplay.textContent = attempts;
-            messageArea.classList.add('hidden'); // Ocultar mensaje de reinicio
-
-            // Seleccionar y mostrar país
-            const areCountriesFinished = currentIndex >= shuffledCountries.length;
-            if (!areCountriesFinished) {
-                const country = shuffledCountries[currentIndex];
-                currentIndex++;
-                currentCountryDisplay.textContent = country;
-                visitedCountries.push(country);
-                updateVisitedCountriesList();
-            } else if (currentCountryDisplay.textContent !== '¡Todos los países mostrados!') {
-                currentCountryDisplay.textContent = '¡Todos los países mostrados!';
-                currentCountryDisplay.classList.add('bg-gray-200', 'text-gray-500');
+            // Lógica para barajar países si se acaban
+            if (countryIndex >= shuffledCountries.length) {
+                shuffleArray(shuffledCountries);
+                countryIndex = 0;
             }
 
-            // Seleccionar y mostrar producto
-            const areProductsFinished = currentProductIndex >= shuffledProducts.length;
-            if (!areProductsFinished) {
-                const product = shuffledProducts[currentProductIndex];
-                currentProductIndex++;
-                currentProductDisplay.textContent = product;
-                visitedProducts.push(product);
-                updateVisitedProductsList();
-            } else if (currentProductDisplay.textContent !== '¡Todos los productos mostrados!') {
-                currentProductDisplay.textContent = '¡Todos los productos mostrados!';
-                currentProductDisplay.classList.add('bg-gray-200', 'text-gray-500');
+            // Lógica para barajar productos si se acaban
+            if (productIndex >= shuffledProducts.length) {
+                shuffleArray(shuffledProducts);
+                productIndex = 0;
+            }
+
+            // Lógica para barajar eventos si se acaban
+            if (eventIndex >= shuffledEvents.length) {
+                shuffleArray(shuffledEvents);
+                eventIndex = 0;
             }
             
-            // Si ya no quedan países ni productos, deshabilitar el botón
-            if (areCountriesFinished && areProductsFinished) {
-                 pickCountryButton.disabled = true;
-                 pickCountryButton.textContent = '¡Todos los elementos mostrados!';
-                 messageArea.textContent = '¡Has explorado todos los países y productos del planeta!';
-                 messageArea.classList.remove('hidden');
-                 currentCountryDisplay.classList.remove('bg-purple-100', 'text-purple-800');
-                 currentCountryDisplay.classList.add('bg-green-100', 'text-green-800');
-                 currentProductDisplay.classList.remove('bg-purple-100', 'text-purple-800');
-                 currentProductDisplay.classList.add('bg-green-100', 'text-green-800');
-            }
+            const randomCountry = shuffledCountries[countryIndex];
+            const randomProduct = shuffledProducts[productIndex];
+            const randomEvent = shuffledEvents[eventIndex];
+            
+            currentCountryDisplay.textContent = randomCountry;
+            currentProductDisplay.textContent = randomProduct;
+            eventMessage.textContent = randomEvent;
+            eventMessageContainer.classList.remove('hidden');
+            
+            // Agregar al historial
+            const countryLi = document.createElement('li');
+            countryLi.textContent = randomCountry;
+            visitedCountriesList.appendChild(countryLi);
+            
+            const productLi = document.createElement('li');
+            productLi.textContent = randomProduct;
+            visitedProductsList.appendChild(productLi);
+            
+            const eventLi = document.createElement('li');
+            eventLi.textContent = randomEvent;
+            visitedEventsList.appendChild(eventLi);
+            
+            countryIndex++;
+            productIndex++;
+            eventIndex++;
+        });
 
-            if (attempts === MAX_ATTEMPTS) {
-                messageArea.textContent = 'Límite de acciones';
-                messageArea.classList.remove('hidden');
+        // Event Listeners para los modales
+        currentProductDisplay.addEventListener('click', () => {
+            const productName = currentProductDisplay.textContent.trim();
+            if (productName && productName !== '¡Haz clic!') {
+                showProductModal(productName);
             }
         });
 
-        // Iniciar la pantalla de login al cargar la página
-        document.addEventListener('DOMContentLoaded', showLoginScreen);
+        closeModalButton.addEventListener('click', () => {
+            productModalContent.classList.add('scale-95');
+            setTimeout(() => productModal.classList.add('hidden'), 300);
+        });
+
+        productModal.addEventListener('click', (e) => {
+            if (e.target.id === 'productModal') {
+                productModalContent.classList.add('scale-95');
+                setTimeout(() => productModal.classList.add('hidden'), 300);
+            }
+        });
+        
+        currentCountryDisplay.addEventListener('click', showCountryModal);
+
+        closeCountryModalButton.addEventListener('click', () => {
+            countryModalContent.classList.add('scale-95');
+            setTimeout(() => countryModal.classList.add('hidden'), 300);
+        });
+
+        countryModal.addEventListener('click', (e) => {
+            if (e.target.id === 'countryModal') {
+                countryModalContent.classList.add('scale-95');
+                setTimeout(() => countryModal.classList.add('hidden'), 300);
+            }
+        });
     </script>
 </body>
 </html>
