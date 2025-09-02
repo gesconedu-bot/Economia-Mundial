@@ -132,14 +132,14 @@
 
         // Listas de países y productos
         const allCountries = [
-            "Afganistán", "Albania", "Alemania", "Angola", "Arabia Saudita", "Argelia", "Argentina", "Armenia",
-            "Australia", "Austria", "Azerbaiyán", "Las Bahamas", "Bangladés", "Bélgica", "Belice", "Benín",
+           "Afganistán", "Albania", "Alemania", "Angola", "Arabia Saudita", "Argelia", "Argentina", "Armenia", "Antigua y Barbuda",
+            "Australia", "Austria", "Azerbaiyán", "Las Bahamas", "Bangladés", "Barbados", "Bélgica", "Belice", "Benín",
             "Bielorrusia", "Bolivia", "Bosnia y Herzegovina", "Botsuana", "Brasil", "Brunéi", "Bulgaria", "Burkina Faso", "Burundi",
             "Bután", "Camboya", "Camerún", "Canadá", "Catar", "Chad", "Chile", "China",
-            "Colombia", "Congo", "Corea del Norte", "Corea del Sur", "Costa de Marfil", "Costa Rica", "Croacia", "Cuba", "Dinamarca",
+            "Colombia", "Congo", "Corea del Norte", "Corea del Sur", "Costa de Marfil", "Costa Rica", "Croacia", "Cuba", "Dinamarca", "Dominica",
             "Ecuador", "Egipto", "El Salvador", "Emiratos Árabes Unidos", "Eritrea", "Eslovaquia", "Eslovenia", "España", "Estados Unidos",
-            "Estonia", "Esuatini", "Etiopía", "Filipinas", "Finlandia", "Fiji", "Francia", "Gabón", "Gambia", "Georgia", "Ghana",
-            "Grecia", "Guatemala", "Guinea", "Guinea-Bisáu", "Guyana", "Guayana", "Groenlandia", "Haití", "Honduras", "Hungría","Hong Kong",
+            "Estonia", "Esuatini", "Etiopía", "Filipinas", "Finlandia", "Fiyi", "Francia", "Gabón", "Gambia", "Georgia", "Ghana",
+            "Grecia", "Guatemala", "Guinea", "Guinea-Bisáu", "Guyana", "Guayana", "Granada", "Groenlandia", "Haití", "Honduras", "Hungría","Hong Kong",
             "India", "Indonesia", "Irak", "Irán", "Irlanda", "Islandia", "Islas Salomón", "Israel", "Italia",
             "Jamaica", "Japón", "Jordania", "Kazajistán", "Kenia", "Kirguistán", "Kuwait", "Laos", "Lesoto",
             "Letonia", "Líbano", "Liberia", "Libia", "Lituania", "Luxemburgo", "Macedonia", "Madagascar", "Malasia",
@@ -147,9 +147,9 @@
             "Mongolia", "Montenegro", "Mozambique", "Namibia", "Nepal", "Nicaragua", "Níger", "Nigeria",
             "Noruega", "Nueva Zelanda", "Nueva Caledonia", "Omán", "Países Bajos", "Pakistán", "Panamá", "Papúa Nueva Guinea", "Paraguay",
             "Perú", "Polonia", "Polinesia Francesa", "Portugal", "Puerto Rico", "Reino Unido", "República Centroafricana", "Chequia", "República Dem. del Congo", "República Dominicana", "Ruanda",
-            "Rumanía", "Rusia", "Sahara Occidental", "Samoa", "Senegal", "Serbia",
+            "Rumanía", "Rusia", "Sahara Occidental", "Samoa", "Senegal", "Serbia", "San Vicente y las Granadinas", "Santa Lucía", "San Cristóbal y Nieves",
             "Sierra Leona", "Singapur", "Siria", "Somalia", "Sri Lanka", "Sudáfrica", "Sudán", "Sudán del Sur",
-            "Suecia", "Suiza", "Surinam", "Tailandia", "Tanzania", "Taiwán", "Tayikistán", "Timor Oriental", "Togo", "Tonga",
+            "Suecia", "Suiza", "Surinam", "Tailandia", "Tanzania", "Taiwán", "Tayikistán", "Timor Oriental", "Togo", "Tonga", "Trinidad y Tobago",
             "Túnez", "Turkmenistán", "Turquía", "Ucrania", "Uganda", "Uruguay", "Uzbekistán", "Vanuatu", "Venezuela",
             "Vietnam", "Yemen", "Yibuti", "Zambia", "Zimbabue"
         ];
@@ -165,7 +165,7 @@
             "Costa de Marfil": "ci", "Costa Rica": "cr", "Croacia": "hr", "Cuba": "cu", "Dinamarca": "dk", "Ecuador": "ec",
             "Egipto": "eg", "El Salvador": "sv", "Emiratos Árabes Unidos": "ae", "Eritrea": "er", "Eslovaquia": "sk",
             "Eslovenia": "si", "España": "es", "Estados Unidos": "us", "Estonia": "ee", "Esuatini": "sz", "Etiopía": "et",
-            "Filipinas": "ph", "Finlandia": "fi", "Fiji": "fj", "Francia": "fr", "Gabón": "ga", "Gambia": "gm",
+            "Filipinas": "ph", "Finlandia": "fi", "Fiyi": "fj", "Francia": "fr", "Gabón": "ga", "Gambia": "gm",
             "Georgia": "ge", "Ghana": "gh", "Grecia": "gr", "Guatemala": "gt", "Guinea": "gn", "Guinea-Bisáu": "gw",
             "Guyana": "gy", "Guayana": "gl", "Groenlandia": "gl", "Haití": "ht", "Honduras": "hn", "Hungría": "hu",
             "India": "in", "Indonesia": "id", "Irak": "iq", "Irán": "ir", "Irlanda": "ie", "Islandia": "is", "Islas Salomón": "sb",
@@ -185,7 +185,8 @@
             "Taiwán": "tw", "Tayikistán": "tj", "Timor Oriental": "tl", "Togo": "tg", "Tonga": "to", "Túnez": "tn",
             "Turkmenistán": "tm", "Turquía": "tr", "Ucrania": "ua", "Uganda": "ug", "Uruguay": "uy", "Uzbekistán": "uz",
             "Vanuatu": "vu", "Venezuela": "ve", "Vietnam": "vn", "Yemen": "ye", "Yibuti": "dj", "Zambia": "zm",
-            "Zimbabue": "zw"
+            "Zimbabue": "zw", "Trinidad y Tobago": "tt", "Granada": "gd", "Barbados": "bb", "San Vicente y las Granadinas": "vc",
+	        "Santa Lucía": "lc", "Dominica": "dm", "Antigua y Barbuda": "ag", "San Cristóbal y Nieves": "kn", "Hong Kong": "hk"
         };
         // Lista de productos
         const allProducts = [
@@ -523,6 +524,14 @@
             "Togo": { continent: "África", products: 0, totalToCollect: 100 },
             "Túnez": { continent: "África", products: 0, totalToCollect: 100 },
             "Zambia": { continent: "África", products: 0, totalToCollect: 100 }
+            "Trinidad y Tobago": { continent: "América", products: 0, totalToCollect: 100 },
+	        "Granada": { continent: "América", products: 0, totalToCollect: 100 },
+        	"Barbados": { continent: "América", products: 0, totalToCollect: 100 },
+        	"San Vicente y las Granadinas": { continent: "América", products: 0, totalToCollect: 100 },
+        	"Santa Lucía": { continent: "América", products: 0, totalToCollect: 100 },
+        	"Dominica": { continent: "América", products: 0, totalToCollect: 100 },
+        	"Antigua y Barbuda": { continent: "América", products: 0, totalToCollect: 100 },
+        	"San Cristóbal y Nieves": { continent: "América", products: 0, totalToCollect: 100 }
         };
 
         // Lista de eventos (solo el texto)
@@ -825,3 +834,4 @@
 </body>
 
 </html>
+
